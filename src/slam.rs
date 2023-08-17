@@ -19,6 +19,11 @@ impl Slam {
         self.current_point_cloud = point_cloud;
     }
 
+    pub fn odometry_update(&mut self, velocity: Velocity2d, delta_time: f64) {
+        self.robot.update_from_velocity(velocity, delta_time);
+        *self.current_point_cloud.center_mut() = self.robot.pose().clone();
+    }
+
     pub fn robot(&self) -> &Robot {
         &self.robot
     }

@@ -1,4 +1,4 @@
-use crate::Error;
+use crate::{Error, Pose2d};
 
 #[derive(Debug, Clone, Copy, Default)]
 pub struct Point2d {
@@ -8,12 +8,12 @@ pub struct Point2d {
 
 #[derive(Debug, Clone, Default)]
 pub struct PointCloud {
-    pub center: Point2d,
+    pub center: Pose2d,
     pub points: Vec<Point2d>,
 }
 
 impl PointCloud {
-    pub fn new(center: Point2d, points: Vec<Point2d>) -> Self {
+    pub fn new(center: Pose2d, points: Vec<Point2d>) -> Self {
         Self { center, points }
     }
 
@@ -30,12 +30,16 @@ impl PointCloud {
             let y = record[0].parse::<f64>().unwrap().sin() * record[1].parse::<f64>().unwrap();
             points.push(Point2d { x, y });
         }
-        let center = Point2d { x: 0., y: 0. };
+        let center = Pose2d::default();
 
         Ok(Self { center, points })
     }
 
     pub fn points(&self) -> &Vec<Point2d> {
         &self.points
+    }
+
+    pub fn center_mut(&mut self) -> &mut Pose2d {
+        &mut self.center
     }
 }

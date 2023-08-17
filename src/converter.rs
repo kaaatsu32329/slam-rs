@@ -32,8 +32,17 @@ pub fn convert_point_cloud_to_egui_points(
     color: Color32,
     scale: f32,
 ) -> Points {
-    let plot_point: PlotPoints =
-        PlotPoints::new(point_cloud.points().iter().map(|p| [p.x, p.y]).collect());
+    let c = point_cloud.center;
+    let plot_point: PlotPoints = PlotPoints::new(
+        point_cloud
+            .points()
+            .iter()
+            .map(|p| {
+                let p = c.rotation * na::Vector2::new(p.x, p.y) + c.translation.vector;
+                [p.x, p.y]
+            })
+            .collect(),
+    );
 
     Points::new(plot_point).color(color).radius(scale)
 }
