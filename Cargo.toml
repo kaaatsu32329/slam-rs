@@ -6,3 +6,12 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+bevy = "0.10"
+bevy_egui = "0.20"
+csv = "1"
+egui = "0.20"
+nalgebra = "0.32"
+
+[[bin]]
+name = "slam"
+path = "src/bin/app.rs"
