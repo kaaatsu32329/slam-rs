@@ -46,3 +46,20 @@ pub fn convert_point_cloud_to_egui_points(
 
     Points::new(plot_point).color(color).radius(scale)
 }
+
+pub fn convert_point_map_to_egui_points(
+    point_map: &crate::PointMap,
+    color: Color32,
+    scale: f32,
+) -> Points {
+    let plot_point: PlotPoints = PlotPoints::new(
+        point_map
+            .points()
+            .iter()
+            .flatten()
+            .map(|p| [p.x, p.y])
+            .collect(),
+    );
+
+    Points::new(plot_point).color(color).radius(scale)
+}
