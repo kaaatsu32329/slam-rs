@@ -8,8 +8,8 @@ pub struct Point2d {
 
 #[derive(Debug, Clone, Default)]
 pub struct PointCloud {
-    pub center: Pose2d,
-    pub points: Vec<Point2d>,
+    center: Pose2d,
+    points: Vec<Point2d>,
 }
 
 impl PointCloud {
@@ -35,11 +35,19 @@ impl PointCloud {
         Ok(Self { center, points })
     }
 
-    pub fn points(&self) -> &Vec<Point2d> {
-        &self.points
+    pub fn center(&self) -> &Pose2d {
+        &self.center
     }
 
     pub fn center_mut(&mut self) -> &mut Pose2d {
         &mut self.center
+    }
+
+    pub fn points(&self) -> &Vec<Point2d> {
+        &self.points
+    }
+
+    pub fn update_points(&mut self, points: Vec<Point2d>) {
+        self.points = points;
     }
 }

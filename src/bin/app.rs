@@ -13,7 +13,7 @@ fn main() {
 
     let mut slam = Slam::new(robot);
     let point_cloud = PointCloud::new_from_csv("dataset/circle.csv").unwrap();
-    slam.sensor_update(point_cloud);
+    slam.sensor_update(point_cloud.points().clone());
 
     let slam = Arc::new(Mutex::new(slam));
 
@@ -21,13 +21,13 @@ fn main() {
     let bevy_cloned_slam = slam.clone();
 
     let velocity = Velocity2d::new(Vector2::new(1., 0.), 0.2);
-    let delta_time = 1.;
+    let delta_time = 0.05;
 
     std::thread::spawn(move || {
-        for _ in 0..10 {
+        for _ in 0..200 {
             cloned_slam.lock().odometry_update(velocity, delta_time);
 
-            std::thread::sleep(std::time::Duration::from_millis(1000));
+            std::thread::sleep(std::time::Duration::from_millis(50));
         }
     });
 

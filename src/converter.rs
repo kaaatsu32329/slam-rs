@@ -32,7 +32,7 @@ pub fn convert_point_cloud_to_egui_points(
     color: Color32,
     scale: f32,
 ) -> Points {
-    let c = point_cloud.center;
+    let c = point_cloud.center();
     let plot_point: PlotPoints = PlotPoints::new(
         point_cloud
             .points()

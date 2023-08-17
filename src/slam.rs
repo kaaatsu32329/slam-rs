@@ -15,8 +15,9 @@ impl Slam {
         }
     }
 
-    pub fn sensor_update(&mut self, point_cloud: PointCloud) {
-        self.current_point_cloud = point_cloud;
+    pub fn sensor_update(&mut self, points: Vec<Point2d>) {
+        *self.current_point_cloud.center_mut() = self.robot.pose().clone();
+        self.current_point_cloud.update_points(points);
     }
 
     pub fn odometry_update(&mut self, velocity: Velocity2d, delta_time: f64) {
