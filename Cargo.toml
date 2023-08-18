@@ -6,10 +6,10 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-bevy = "0.10"
-bevy_egui = "0.20"
+bevy = "0.11"
+bevy_egui = "0.21"
 csv = "1"
-egui = "0.20"
+egui = "0.22"
 nalgebra = "0.32"
 parking_lot = "0.12"
 grid_map = { git = "https://github.com/openrr/grid_map" }

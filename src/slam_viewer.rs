@@ -35,9 +35,9 @@ impl SlamViewerApp {
 
         self.app
             .add_plugins(user_plugin)
-            .add_plugin(EguiPlugin)
+            .add_plugins(EguiPlugin)
             .insert_resource(SharedSlam(slam))
-            .add_system(update_system);
+            .add_systems(Update, update_system);
     }
 
     pub fn run(&mut self) {
