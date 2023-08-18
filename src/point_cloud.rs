@@ -1,10 +1,8 @@
 use crate::{Error, Pose2d};
+use na::Vector2;
+use nalgebra as na;
 
-#[derive(Debug, Clone, Copy, Default)]
-pub struct Point2d {
-    pub x: f64,
-    pub y: f64,
-}
+pub type Point2d = na::Point2<f64>;
 
 #[derive(Debug, Clone, Default)]
 pub struct PointCloud {
@@ -28,7 +26,9 @@ impl PointCloud {
             let record = result.unwrap();
             let x = record[0].parse::<f64>().unwrap().cos() * record[1].parse::<f64>().unwrap();
             let y = record[0].parse::<f64>().unwrap().sin() * record[1].parse::<f64>().unwrap();
-            points.push(Point2d { x, y });
+            points.push(Point2d {
+                coords: Vector2::new(x, y),
+            });
         }
         let center = Pose2d::default();
 

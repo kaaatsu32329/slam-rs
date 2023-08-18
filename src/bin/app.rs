@@ -26,6 +26,9 @@ fn main() {
     std::thread::spawn(move || {
         for _ in 0..200 {
             cloned_slam.lock().odometry_update(velocity, delta_time);
+            cloned_slam
+                .lock()
+                .sensor_update(point_cloud.points().clone());
 
             std::thread::sleep(std::time::Duration::from_millis(50));
         }

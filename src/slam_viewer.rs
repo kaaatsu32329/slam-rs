@@ -5,7 +5,7 @@ use bevy::{
     window::{Window, WindowPlugin},
 };
 use bevy_egui::{
-    egui::{self, plot::Plot, Color32},
+    egui::{self, plot::Plot},
     EguiContexts, EguiPlugin,
 };
 use parking_lot::Mutex;
@@ -53,14 +53,19 @@ fn update_system(mut contexts: EguiContexts, slam: Res<SharedSlam>) {
             .data_aspect(1.)
             .show(ui, |plot_ui| {
                 let locked_slam = slam.0.lock();
-                plot_ui.polygon(convert_robot_to_egui_point(
-                    locked_slam.robot(),
-                    Color32::LIGHT_BLUE,
+                plot_ui.points(convert_point_map_to_egui_points(
+                    locked_slam.point_map(),
+                    DEFAULT_POINT_MAP_COLOR,
                     1.,
                 ));
                 plot_ui.points(convert_point_cloud_to_egui_points(
                     locked_slam.current_point_cloud(),
-                    Color32::YELLOW,
+                    DEFAULT_POINT_CLOUD_COLOR,
+                    2.,
+                ));
+                plot_ui.polygon(convert_robot_to_egui_point(
+                    locked_slam.robot(),
+                    DEFAULT_ROBOT_COLOR,
                     1.,
                 ));
             });
