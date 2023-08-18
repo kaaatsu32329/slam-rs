@@ -53,8 +53,11 @@ fn update_system(mut contexts: EguiContexts, slam: Res<SharedSlam>) {
             .data_aspect(1.)
             .show(ui, |plot_ui| {
                 let locked_slam = slam.0.lock();
+                for poly in convert_grid_map_to_egui_polygon(&locked_slam.map().grid_map) {
+                    plot_ui.polygon(poly);
+                }
                 plot_ui.points(convert_point_map_to_egui_points(
-                    locked_slam.point_map(),
+                    &locked_slam.map().point_map,
                     DEFAULT_POINT_MAP_COLOR,
                     1.,
                 ));

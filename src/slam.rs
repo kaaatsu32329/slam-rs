@@ -5,7 +5,7 @@ use bevy::prelude::*;
 pub struct Slam {
     robot: Robot,
     current_point_cloud: PointCloud,
-    point_map: PointMap,
+    map: Map,
     slam_executor: SlamExecutor,
 }
 
@@ -14,7 +14,7 @@ impl Slam {
         Self {
             robot,
             current_point_cloud: PointCloud::default(),
-            point_map: PointMap::default(),
+            map: Map::default(),
             slam_executor: SlamExecutor::default(),
         }
     }
@@ -23,7 +23,8 @@ impl Slam {
         *self.current_point_cloud.center_mut() = self.robot.pose().clone();
         self.current_point_cloud.update_points(points);
 
-        self.slam_executor.update(&self.current_point_cloud, &mut self.point_map);
+        self.slam_executor
+            .update(&self.current_point_cloud, &mut self.map);
     }
 
     pub fn odometry_update(&mut self, velocity: Velocity2d, delta_time: f64) {
@@ -39,7 +40,7 @@ impl Slam {
         &self.current_point_cloud
     }
 
-    pub fn point_map(&self) -> &PointMap {
-        &self.point_map
+    pub fn map(&self) -> &Map {
+        &self.map
     }
 }

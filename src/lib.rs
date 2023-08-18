@@ -1,6 +1,7 @@
 mod converter;
 mod default_settings;
 mod error;
+mod map;
 mod point_cloud;
 mod point_map;
 mod robot;
@@ -11,6 +12,7 @@ mod slam_viewer;
 pub use converter::*;
 pub use default_settings::*;
 pub use error::*;
+pub use map::*;
 pub use point_cloud::*;
 pub use point_map::*;
 pub use robot::*;
