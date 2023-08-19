@@ -14,6 +14,8 @@ use std::sync::Arc;
 #[derive(Resource)]
 pub struct SharedSlam(Arc<Mutex<Slam>>);
 
+const MAP_VIEWER_UPDATE_CYCLE: f32 = 1.0;
+
 pub struct SlamViewerApp {
     app: App,
 }
@@ -37,7 +39,9 @@ impl SlamViewerApp {
             .add_plugins(user_plugin)
             .add_plugins(EguiPlugin)
             .insert_resource(SharedSlam(slam))
-            .add_systems(Update, update_system);
+            .insert_resource(FixedTime::new_from_secs(MAP_VIEWER_UPDATE_CYCLE))
+            .add_systems(Update, update_system)
+            .add_systems(FixedUpdate, map_viewer_update_system);
     }
 
     pub fn run(&mut self) {
@@ -74,3 +78,5 @@ fn update_system(mut contexts: EguiContexts, slam: Res<SharedSlam>) {
             });
     });
 }
+
+fn map_viewer_update_system() {}
