@@ -9,7 +9,7 @@ fn main() {
     let mut app = SlamViewerApp::new();
 
     let robot = Robot::new(
-        Pose2d::new(Vector2::new(-2., -2.), 0_f64.to_radians()),
+        Pose2d::new(Vector2::new(-2.1, -2.), 0_f64.to_radians()),
         Velocity2d::new(Vector2::new(0., 0.), 0.),
     );
 
