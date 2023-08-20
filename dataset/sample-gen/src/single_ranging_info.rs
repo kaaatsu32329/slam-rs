@@ -1,15 +1,15 @@
-pub struct LidarInfo {
+pub struct SingleRangingInfo {
     pub angle_deg: f64,
     pub distance: f64,
 }
 
-impl LidarInfo {
+impl SingleRangingInfo {
     pub fn to_csv_raw_string(&self) -> String {
         format!("{:.4},{:.4}\n", self.angle_deg, self.distance)
     }
 }
 
-pub fn lidar_info_to_csv_format(lidar_info: &[LidarInfo]) -> String {
+pub fn lidar_info_to_csv_format(lidar_info: &[SingleRangingInfo]) -> String {
     let mut csv_string = String::from("angle,distance\n");
 
     for lidar in lidar_info {
@@ -25,7 +25,7 @@ mod test {
 
     #[test]
     fn test_to_csv_raw_string() {
-        let lidar_info = LidarInfo {
+        let lidar_info = SingleRangingInfo {
             angle_deg: 1.0,
             distance: 2.0,
         };
@@ -38,11 +38,11 @@ mod test {
     #[test]
     fn test_lidar_info_to_csv_format() {
         let lidar_info = vec![
-            LidarInfo {
+            SingleRangingInfo {
                 angle_deg: 1.0,
                 distance: 2.0,
             },
-            LidarInfo {
+            SingleRangingInfo {
                 angle_deg: 3.0,
                 distance: 4.0,
             },

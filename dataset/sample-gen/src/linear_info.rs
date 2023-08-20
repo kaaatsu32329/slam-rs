@@ -10,11 +10,11 @@ pub struct LinearInfo {
 }
 
 impl LinearInfo {
-    pub fn get_distance_to_point(&self, x: f64, y: f64) -> f64 {
+    pub fn distance_to_point(&self, x: f64, y: f64) -> f64 {
         (self.a * x + self.b * y + self.c).abs() / (self.a.powi(2) + self.b.powi(2)).sqrt()
     }
 
-    pub fn get_intersection(&self, other: &LinearInfo) -> Option<(f64, f64)> {
+    pub fn intersect_with(&self, other: &LinearInfo) -> Option<(f64, f64)> {
         if (self.a * other.b - other.a * self.b).abs() < 1e-10 {
             None
         } else {
@@ -45,6 +45,18 @@ impl LinearInfo {
             }
         }
     }
+
+    pub fn y_from_x(&self, x: f64) -> f64 {
+        -(self.a * x + self.c) / self.b
+    }
+
+    pub fn x_from_y(&self, y: f64) -> f64 {
+        -(self.b * y + self.c) / self.a
+    }
+
+    pub fn is_satisfied_equation(&self, x: f64, y: f64) -> bool {
+        (self.a * x + self.b * y + self.c).abs() < 1e-10
+    }
 }
 
 #[cfg(test)]
@@ -66,7 +78,7 @@ mod test {
             y_max: None,
         };
 
-        let distance = linear_info.get_distance_to_point(point.0, point.1);
+        let distance = linear_info.distance_to_point(point.0, point.1);
 
         assert_approx_eq!(distance, 3.2);
     }
@@ -92,7 +104,7 @@ mod test {
             y_max: None,
         };
 
-        let intersect_point = linear_info_1.get_intersection(&linear_info_2);
+        let intersect_point = linear_info_1.intersect_with(&linear_info_2);
 
         assert_approx_eq!(intersect_point.unwrap().0, 1.0);
         assert_approx_eq!(intersect_point.unwrap().1, -2.0);

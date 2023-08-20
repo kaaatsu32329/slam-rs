@@ -1,16 +1,16 @@
 use crate::{
-    circle_info::*, csv_reader::*, lidar_info::LidarInfo, linear_info::*,
-    robot_pose_time_stamped::*,
+    circle_info::*, csv_reader::*, linear_info::*, robot_pose_time_stamped::*,
+    single_ranging_info::SingleRangingInfo,
 };
 
 const ANGLE_RESOLUTION: f64 = 1.0;
 const DISTANCE_MAX_LIMIT: f64 = 12.0;
 
-pub fn get_lidar_data(
+pub fn sample_lidar_info(
     robot_pose_file_path: &str,
     linear_wall_file_path: &str,
     circle_wall_file_path: &str,
-) -> Vec<Vec<LidarInfo>> {
+) -> Vec<Vec<SingleRangingInfo>> {
     let mut lidar_data = vec![];
 
     let steps = (360.0 / ANGLE_RESOLUTION) as usize;
@@ -27,16 +27,16 @@ pub fn get_lidar_data(
             let mut distance = DISTANCE_MAX_LIMIT;
 
             for linear in &linear_info {
-                if let Some(d) = distance_robot_pose_to_linear(&pose, &linear, angle) {
+                if let Some(d) = distance_robot_pose_to_linear(&pose, linear, angle) {
                     distance = distance.min(d);
                 }
             }
             for circle in &circle_info {
-                if let Some(d) = distance_robot_pose_to_circle(&pose, &circle, angle) {
+                if let Some(d) = distance_robot_pose_to_circle(&pose, circle, angle) {
                     distance = distance.min(d);
                 }
             }
-            data.push(LidarInfo {
+            data.push(SingleRangingInfo {
                 angle_deg: angle,
                 distance,
             });
@@ -54,12 +54,9 @@ fn distance_robot_pose_to_linear(
 ) -> Option<f64> {
     let target_linear_info = robot_pose.to_linear_info_from_angle(angle);
 
-    let intersect_point = linear_info.get_intersection(&target_linear_info);
+    let intersect_point = linear_info.intersect_with(&target_linear_info);
 
-    match intersect_point {
-        Some((x, y)) => Some(robot_pose.get_distance_to_point(x, y)),
-        None => None,
-    }
+    intersect_point.map(|(x, y)| robot_pose.distance_to_point(x, y))
 }
 
 fn distance_robot_pose_to_circle(
@@ -69,13 +66,13 @@ fn distance_robot_pose_to_circle(
 ) -> Option<f64> {
     let target_linear_info = robot_pose.to_linear_info_from_angle(angle);
 
-    let intersect_point = circle_info.get_intersection(&target_linear_info);
+    let intersect_point = circle_info.intersect_with(&target_linear_info);
 
     match intersect_point {
         Some(points) => {
             let mut distance = f64::MAX;
             for p in points {
-                distance = robot_pose.get_distance_to_point(p.0, p.1).min(distance);
+                distance = robot_pose.distance_to_point(p.0, p.1).min(distance);
             }
             Some(distance)
         }
@@ -86,6 +83,8 @@ fn distance_robot_pose_to_circle(
 #[cfg(test)]
 mod test {
     use super::*;
+
+    use assert_approx_eq::assert_approx_eq;
 
     const _ROBOT_POSE_FILE_PATH: &str = "config/robot_pose.csv";
     const _LINEAR_WALL_FILE_PATH: &str = "config/linear.csv";
@@ -117,6 +116,6 @@ mod test {
 
         let distance1 = distance_robot_pose_to_linear(&robot_pose, &linear_info1, angle);
 
-        assert_eq!(distance1, Some(4.));
+        assert_approx_eq!(distance1.unwrap(), 4.0);
     }
 }

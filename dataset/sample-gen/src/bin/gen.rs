@@ -9,7 +9,7 @@ const CIRCLE_WALL_FILE_PATH: &str = "config/circle.csv";
 const OUTPUT_FILE_PATH: &str = "output";
 
 fn main() {
-    let lidar_info = get_lidar_data(
+    let lidar_info = sample_lidar_info(
         ROBOT_POSE_FILE_PATH,
         LINEAR_WALL_FILE_PATH,
         CIRCLE_WALL_FILE_PATH,

@@ -9,7 +9,7 @@ pub struct RobotPoseTimeStamped {
 }
 
 impl RobotPoseTimeStamped {
-    pub fn get_distance_to_point(&self, x: f64, y: f64) -> f64 {
+    pub fn distance_to_point(&self, x: f64, y: f64) -> f64 {
         ((self.x - x).powi(2) + (self.y - y).powi(2)).sqrt()
     }
 
@@ -63,7 +63,7 @@ mod test {
         };
         let point = (5.0, 6.0);
 
-        let distance = robot_pose.get_distance_to_point(point.0, point.1);
+        let distance = robot_pose.distance_to_point(point.0, point.1);
 
         assert_approx_eq!(distance, 5.656854249);
     }
