@@ -6,7 +6,7 @@ use bevy_egui::egui::{
 use grid_map::*;
 use nalgebra as na;
 
-pub fn convert_robot_to_egui_point(robot: &Robot, color: Color32, scale: f64) -> Polygon {
+pub fn convert_robot_to_egui_polygon(robot: &Robot, color: Color32, scale: f64) -> Polygon {
     let robot_size = scale * 0.04;
 
     let vertices = vec![
@@ -101,4 +101,41 @@ pub fn convert_grid_map_to_egui_polygon(grid_map: &GridMap<u8>) -> Vec<Polygon> 
     }
 
     polygons
+}
+
+pub fn convert_grid_map_to_egui_polygon_lite(grid_map: &GridMap<u8>) -> Vec<Polygon> {
+    let min_point = grid_map.min_point();
+    let resolution = grid_map.resolution();
+    let width = grid_map.width();
+    let cells = grid_map.cells();
+
+    let map_area_points = vec![
+        [min_point.x, min_point.y],
+        [min_point.x + width as f64 * resolution, min_point.y],
+        [
+            min_point.x + width as f64 * resolution,
+            min_point.y + width as f64 * resolution,
+        ],
+        [min_point.x, min_point.y + width as f64 * resolution],
+    ];
+
+    let mut obstacle_area_points = vec![];
+
+    cells.iter().for_each(|c| {
+        if let Cell::Obstacle = c {
+            let i = cells.iter().position(|c| c == &Cell::Obstacle).unwrap();
+            let x = min_point.x + (i % width) as f64 * resolution;
+            let y = min_point.y + (i / width) as f64 * resolution;
+            obstacle_area_points.push([x, y]);
+        }
+    });
+
+    vec![
+        Polygon::new(map_area_points)
+            .color(Color32::from_gray(200))
+            .fill_alpha(1.0),
+        Polygon::new(obstacle_area_points)
+            .color(Color32::from_gray(30))
+            .fill_alpha(1.0),
+    ]
 }

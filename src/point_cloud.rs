@@ -24,10 +24,10 @@ impl PointCloud {
 
         for result in rdr.records() {
             let record = result.unwrap();
-            let x = record[0].parse::<f64>().unwrap().cos() * record[1].parse::<f64>().unwrap();
-            let y = record[0].parse::<f64>().unwrap().sin() * record[1].parse::<f64>().unwrap();
+            let angle = record[0].parse::<f64>().unwrap().to_radians();
+            let distance = record[1].parse::<f64>().unwrap();
             points.push(Point2d {
-                coords: Vector2::new(x, y),
+                coords: Vector2::new(angle.cos() * distance, angle.sin() * distance),
             });
         }
         let center = Pose2d::default();

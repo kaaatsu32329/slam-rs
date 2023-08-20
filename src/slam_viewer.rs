@@ -55,9 +55,11 @@ fn update_system(mut contexts: EguiContexts, slam: Res<SharedSlam>) {
     egui::CentralPanel::default().show(ctx, |ui| {
         Plot::new("point_cloud")
             .data_aspect(1.)
+            .show_axes([false, false])
+            .show_background(false)
             .show(ui, |plot_ui| {
                 let locked_slam = slam.0.lock();
-                for poly in convert_grid_map_to_egui_polygon(&locked_slam.map().grid_map) {
+                for poly in convert_grid_map_to_egui_polygon_lite(&locked_slam.map().grid_map) {
                     plot_ui.polygon(poly);
                 }
                 plot_ui.points(convert_point_map_to_egui_points(
@@ -70,7 +72,7 @@ fn update_system(mut contexts: EguiContexts, slam: Res<SharedSlam>) {
                     DEFAULT_POINT_CLOUD_COLOR,
                     2.,
                 ));
-                plot_ui.polygon(convert_robot_to_egui_point(
+                plot_ui.polygon(convert_robot_to_egui_polygon(
                     locked_slam.robot(),
                     DEFAULT_ROBOT_COLOR,
                     1.,
