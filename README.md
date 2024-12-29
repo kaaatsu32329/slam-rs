@@ -1,5 +1,7 @@
 # slam-rs
 
+SLAM (Simultaneous Localization and Mapping) pure Rust implementation.
+
 ## Run example
 
 ```
