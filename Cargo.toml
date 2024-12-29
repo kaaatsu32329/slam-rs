@@ -1,0 +1,13 @@
+[package]
+name = "slam"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+grid_map = { git = "https://github.com/kaaatsu32329/grid_map" }
+nalgebra = "0.33"
+rerun = "0.20"
+yaml-rust2 = "0.9"
+
+[dev-dependencies]
+assert_approx_eq = "1"
