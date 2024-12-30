@@ -1,12 +1,9 @@
 use grid_map::{Grid, Position};
 use nalgebra as na;
 
-pub fn coordinate_transformation<
-    I: Into<na::Isometry2<f64>> + Clone,
-    T: Into<na::Translation2<f64>> + Clone,
->(
-    current_position: &I,
-    target_points: &[T],
+pub fn coordinate_transformation(
+    current_position: &(impl Into<na::Isometry2<f64>> + Clone),
+    target_points: &[(impl Into<na::Translation2<f64>> + Clone)],
 ) -> Vec<na::Translation2<f64>> {
     let mut points = Vec::new();
     for target_point in target_points {

@@ -4,6 +4,8 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+argmin = "0.10"
+argmin-math = "0.4"
 grid_map = { git = "https://github.com/kaaatsu32329/grid_map" }
 nalgebra = "0.33"
 rerun = "0.20"
