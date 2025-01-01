@@ -18,17 +18,19 @@ pub struct IterativeClosestPoint2 {
 }
 
 impl IterativeClosestPoint2 {
-    pub fn new(
-        scan_points: &(impl Into<Pointcloud2> + Clone),
-        reference_points: &(impl Into<Pointcloud2> + Clone),
-        robot_pose: &(impl Into<Pose2> + Clone),
-    ) -> Self {
+    pub fn new(robot_pose: &(impl Into<Pose2> + Clone)) -> Self {
         Self {
-            scan_points: (*scan_points).clone().into(),
-            reference_points: (*reference_points).clone().into(),
+            scan_points: Pointcloud2::default(),
+            reference_points: Pointcloud2::default(),
             robot_pose: (*robot_pose).clone().into(),
-            correspondences: vec![0; scan_points.clone().into().points().len()],
+            correspondences: Vec::new(),
         }
+    }
+
+    pub fn set_data(&mut self, scan_points: &Pointcloud2, reference_points: &Pointcloud2) {
+        self.scan_points = scan_points.clone();
+        self.reference_points = reference_points.clone();
+        self.correspondences = vec![0; scan_points.points().len()];
     }
 
     fn data_correspondences(&mut self) {
@@ -81,10 +83,15 @@ impl IterativeClosestPoint2 {
         self.robot_pose = best;
     }
 
-    pub fn scan_matching(&mut self, max_iterations: usize) {
+    pub fn scan_matching(&mut self, max_iterations: usize) -> Pose2 {
         for _ in 0..max_iterations {
             self.optimize_once();
         }
+        self.robot_pose
+    }
+
+    pub fn robot_pose(&self) -> Pose2 {
+        self.robot_pose.clone()
     }
 }
 
@@ -166,6 +173,9 @@ mod test {
         let scan_points = Pointcloud2::new(scan_points_inner);
         let reference_points = Pointcloud2::new(reference_points_inner);
 
-        IterativeClosestPoint2::new(&scan_points, &reference_points, &init_pose)
+        let mut icp_client = IterativeClosestPoint2::new(&init_pose);
+        icp_client.set_data(&scan_points, &reference_points);
+
+        icp_client
     }
 }

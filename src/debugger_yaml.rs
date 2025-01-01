@@ -56,11 +56,11 @@ impl DebuggerYaml {
         let angle = current_odom.pose().rotation.angle();
         let x = current_odom.pose().translation.vector.x;
         let y = current_odom.pose().translation.vector.y;
-        let current_position = na::Isometry2::new(na::Vector2::new(x, y), angle);
+        let current_position_from_odom = na::Isometry2::new(na::Vector2::new(x, y), angle);
 
         self.counter += 1;
         self.odom_counter = idx;
 
-        Some((scan, current_position))
+        Some((scan, current_position_from_odom))
     }
 }
