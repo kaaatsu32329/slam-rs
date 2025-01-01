@@ -4,23 +4,24 @@ use argmin::{
     solver::{gradientdescent::SteepestDescent, linesearch::MoreThuenteLineSearch},
 };
 
+// TODO: Abstraction to be able to deal with both 2D and 3D.
 #[derive(Debug, Clone)]
-pub struct IterativeClosestPoint {
+pub struct IterativeClosestPoint2 {
     /// Robot coordinates of the scan points.
     scan_points: Pointcloud2,
     /// World coordinates of the reference points.
     reference_points: Pointcloud2,
     /// Estimated robot pose.
-    robot_pose: Pose,
+    robot_pose: Pose2,
     /// Correspondences between scan points and reference points.
     correspondences: Vec<usize>,
 }
 
-impl IterativeClosestPoint {
+impl IterativeClosestPoint2 {
     pub fn new(
         scan_points: &(impl Into<Pointcloud2> + Clone),
         reference_points: &(impl Into<Pointcloud2> + Clone),
-        robot_pose: &(impl Into<Pose> + Clone),
+        robot_pose: &(impl Into<Pose2> + Clone),
     ) -> Self {
         Self {
             scan_points: (*scan_points).clone().into(),
@@ -34,8 +35,8 @@ impl IterativeClosestPoint {
         let scan_points_transformed =
             coordinate_transformation(&self.robot_pose, self.scan_points.points())
                 .iter()
-                .map(|p| Point::from(*p))
-                .collect::<Vec<Point>>();
+                .map(|p| Point2::from(*p))
+                .collect::<Vec<Point2>>();
         for (i, scan_point) in scan_points_transformed.iter().enumerate() {
             let mut min_distance = f64::MAX;
             let mut min_idx = 0;
@@ -50,12 +51,12 @@ impl IterativeClosestPoint {
         }
     }
 
-    fn distance_between_correspondences(&self, pose: &Pose) -> f64 {
+    fn distance_between_correspondences(&self, pose: &Pose2) -> f64 {
         let mut distance = 0.0;
         let scan_points_transformed = coordinate_transformation(pose, self.scan_points.points())
             .iter()
-            .map(|p| Point::from(*p))
-            .collect::<Vec<Point>>();
+            .map(|p| Point2::from(*p))
+            .collect::<Vec<Point2>>();
         for (i, j) in self.correspondences.iter().enumerate() {
             distance +=
                 scan_points_transformed[i].distance_squared(&self.reference_points.points()[*j]);
@@ -87,8 +88,8 @@ impl IterativeClosestPoint {
     }
 }
 
-impl CostFunction for IterativeClosestPoint {
-    type Param = Pose;
+impl CostFunction for IterativeClosestPoint2 {
+    type Param = Pose2;
 
     type Output = f64;
 
@@ -97,23 +98,23 @@ impl CostFunction for IterativeClosestPoint {
     }
 }
 
-impl Gradient for IterativeClosestPoint {
-    type Param = Pose;
+impl Gradient for IterativeClosestPoint2 {
+    type Param = Pose2;
 
-    type Gradient = Pose;
+    type Gradient = Pose2;
 
     fn gradient(&self, param: &Self::Param) -> Result<Self::Gradient, argmin::core::Error> {
         let epsilon = 1e-6;
-        let grad_x = (self.cost(&Pose::new(param.x() + epsilon, param.y(), param.theta()))?
-            - self.cost(&Pose::new(param.x() - epsilon, param.y(), param.theta()))?)
+        let grad_x = (self.cost(&Pose2::new(param.x() + epsilon, param.y(), param.theta()))?
+            - self.cost(&Pose2::new(param.x() - epsilon, param.y(), param.theta()))?)
             / (2.0 * epsilon);
-        let grad_y = (self.cost(&Pose::new(param.x(), param.y() + epsilon, param.theta()))?
-            - self.cost(&Pose::new(param.x(), param.y() - epsilon, param.theta()))?)
+        let grad_y = (self.cost(&Pose2::new(param.x(), param.y() + epsilon, param.theta()))?
+            - self.cost(&Pose2::new(param.x(), param.y() - epsilon, param.theta()))?)
             / (2.0 * epsilon);
-        let grad_theta = (self.cost(&Pose::new(param.x(), param.y(), param.theta() + epsilon))?
-            - self.cost(&Pose::new(param.x(), param.y(), param.theta() - epsilon))?)
+        let grad_theta = (self.cost(&Pose2::new(param.x(), param.y(), param.theta() + epsilon))?
+            - self.cost(&Pose2::new(param.x(), param.y(), param.theta() - epsilon))?)
             / (2.0 * epsilon);
-        Ok(Pose::new(grad_x, grad_y, grad_theta))
+        Ok(Pose2::new(grad_x, grad_y, grad_theta))
     }
 }
 
@@ -127,7 +128,7 @@ mod test {
         let mut icp_client = data_gen();
         icp_client.scan_matching(5);
 
-        let expected_pose = Pose::new(0.1, 0.1, 0.1);
+        let expected_pose = Pose2::new(0.1, 0.1, 0.1);
 
         println!("Estimated: {:?}", icp_client.robot_pose);
         println!("Expected: {:?}", expected_pose);
@@ -140,31 +141,31 @@ mod test {
         );
     }
 
-    fn data_gen() -> IterativeClosestPoint {
-        let init_pose = Pose::new(0.0, 0.0, 0.0);
-        let mut scan_points_inner = vec![Point::new(init_pose.x(), init_pose.y())];
+    fn data_gen() -> IterativeClosestPoint2 {
+        let init_pose = Pose2::new(0.0, 0.0, 0.0);
+        let mut scan_points_inner = vec![Point2::new(init_pose.x(), init_pose.y())];
         let wall_length = 1.0;
         let resolution = 20.0;
         for i in 1..(resolution as i32) {
-            scan_points_inner.push(Point::new(
+            scan_points_inner.push(Point2::new(
                 init_pose.x(),
                 init_pose.y() + wall_length / resolution * i as f64,
             ));
-            scan_points_inner.push(Point::new(
+            scan_points_inner.push(Point2::new(
                 init_pose.x() + wall_length / resolution * i as f64,
                 init_pose.y(),
             ));
         }
 
-        let expected_pose = Pose::new(0.1, 0.1, 0.1);
+        let expected_pose = Pose2::new(0.1, 0.1, 0.1);
         let reference_points_inner = coordinate_transformation(&expected_pose, &scan_points_inner)
             .iter()
-            .map(|p| Point::from(*p))
-            .collect::<Vec<Point>>();
+            .map(|p| Point2::from(*p))
+            .collect::<Vec<Point2>>();
 
         let scan_points = Pointcloud2::new(scan_points_inner);
         let reference_points = Pointcloud2::new(reference_points_inner);
 
-        IterativeClosestPoint::new(&scan_points, &reference_points, &init_pose)
+        IterativeClosestPoint2::new(&scan_points, &reference_points, &init_pose)
     }
 }

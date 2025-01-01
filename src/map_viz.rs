@@ -1,11 +1,11 @@
 use crate::*;
 use grid_map::Position;
 
-pub struct MapViz {
+pub struct MapViz2 {
     recording_stream: rerun::RecordingStream,
 }
 
-impl MapViz {
+impl MapViz2 {
     pub fn new() -> Self {
         let recording_stream = rerun::RecordingStreamBuilder::new("map_viz")
             .spawn()
@@ -13,7 +13,7 @@ impl MapViz {
         Self { recording_stream }
     }
 
-    pub fn update(&mut self, mapping: &Mapping, current_pose: Pose) {
+    pub fn update(&mut self, mapping: &Mapping, current_pose: Pose2) {
         let map_frame_min_point = (mapping.min_point().x as f32, mapping.min_point().y as f32);
         let map_size = mapping.map_size();
         let resolution = mapping.resolution();
@@ -68,7 +68,7 @@ fn position_to_rerun_boxes2d(
     )])
 }
 
-impl Default for MapViz {
+impl Default for MapViz2 {
     fn default() -> Self {
         Self::new()
     }
