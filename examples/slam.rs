@@ -21,12 +21,12 @@ fn main() {
         DEFAULT_PROBABILITY_OCCUPIED_SPACE,
     );
 
-    let mut map_viz = MapViz::new();
+    let mut map_viz = MapViz2::new();
 
     while let Some((laser_scan, current_position)) = data_loader.next_scan_2d() {
         mapping.update(&current_position, &laser_scan);
 
-        let current_pose = Pose::new(
+        let current_pose = Pose2::new(
             current_position.translation.vector.x,
             current_position.translation.vector.y,
             current_position.rotation.angle(),

@@ -109,7 +109,7 @@ impl From<LaserScan> for Pointcloud2 {
             let angle = laser_scan.angle_min + (i as f64) * laser_scan.angle_increment;
             let x = angle.cos() * range;
             let y = angle.sin() * range;
-            points.push(Point::new(x, y));
+            points.push(Point2::new(x, y));
         }
         Self::new_with_header(header, points)
     }
