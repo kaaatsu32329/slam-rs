@@ -1,6 +1,5 @@
 // TODO: Remove or move to tests
 use crate::*;
-use nalgebra as na;
 
 pub struct DebuggerYaml {
     laser_scan: Vec<LaserScan>,
@@ -30,7 +29,7 @@ impl DebuggerYaml {
         self.odom_counter = 0;
     }
 
-    pub fn next_scan_2d(&mut self) -> Option<(LaserScan, na::Isometry2<f64>)> {
+    pub fn next_scan_2d(&mut self) -> Option<(LaserScan, Odometry)> {
         if self.counter >= self.laser_scan.len() {
             return None;
         }
@@ -53,14 +52,9 @@ impl DebuggerYaml {
 
         let current_odom = odom.linear_interpolation(&next_odom, scan_time);
 
-        let angle = current_odom.pose().rotation.angle();
-        let x = current_odom.pose().translation.vector.x;
-        let y = current_odom.pose().translation.vector.y;
-        let current_position = na::Isometry2::new(na::Vector2::new(x, y), angle);
-
         self.counter += 1;
         self.odom_counter = idx;
 
-        Some((scan, current_position))
+        Some((scan, current_odom))
     }
 }

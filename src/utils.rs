@@ -1,3 +1,4 @@
+use crate::*;
 use grid_map::{Grid, Position};
 use nalgebra as na;
 
@@ -66,6 +67,67 @@ pub fn linear_interpolation(
     slope * (current_time - time0) + value0
 }
 
+/// Detects the best line that fits the given points using the RANSAC algorithm.
+/// Actually, some parts of the algorithm differ slightly from the actual algorithm.
+pub fn ransac_algorithm(
+    pointcloud: &(impl Into<Pointcloud2> + Clone),
+    max_iters: usize,
+    threshold_distance: f64,
+) -> Vec<(Vec<usize>, Line2)> {
+    let pointcloud: Pointcloud2 = pointcloud.clone().into();
+    let min_sample = 2;
+    let least_points = 2; // TODO: Move to the parameter.
+    let mut lines = Vec::new();
+
+    for _ in 0..max_iters {
+        let random_idxs = rand::seq::index::sample(
+            &mut rand::thread_rng(),
+            pointcloud.points().len(),
+            min_sample,
+        )
+        .into_vec();
+
+        let mut point_idx = vec![random_idxs[0], random_idxs[1]];
+        let mut line = Line2::new(&[
+            pointcloud.points()[random_idxs[0]],
+            pointcloud.points()[random_idxs[1]],
+        ]);
+        let mut added_points = Vec::new();
+
+        for (idx, point) in pointcloud
+            .points()
+            .iter()
+            .enumerate()
+            .filter(|(i, _)| *i != random_idxs[0] && *i != random_idxs[1])
+        {
+            let distance = line.distance(&[*point])[0];
+            if distance < threshold_distance {
+                point_idx.push(idx);
+                added_points.push(*point);
+            }
+        }
+
+        if added_points.len() > least_points {
+            line.add_points(&added_points);
+
+            if !lines.iter().any(|(_, l)| *l == line) {
+                lines.push((point_idx, line));
+            } else {
+                let (idx, (_, exist_line)) = lines
+                    .iter()
+                    .enumerate()
+                    .find(|(_, (_, l))| *l == line)
+                    .unwrap();
+                if exist_line.points_len() < line.points_len() {
+                    lines[idx] = (point_idx, line);
+                }
+            }
+        }
+    }
+
+    lines
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -86,5 +148,24 @@ mod test {
 
         assert_approx_eq!(curret_value, 0.5);
         assert_approx_eq!(future_value, 2.0);
+    }
+
+    #[test]
+    fn test_ransac_algorithm() {
+        let mut pointcloud_inner = vec![Point2::new(0.0, 0.0)];
+        let resolution = 20.0;
+        for i in 1..(resolution as i32) {
+            pointcloud_inner.push(Point2::new(0.0, 0.0 + 10.0 / resolution * i as f64));
+            pointcloud_inner.push(Point2::new(0.0 + 10.0 / resolution * i as f64, 0.0));
+        }
+        let pointcloud = Pointcloud2::new(pointcloud_inner);
+
+        let lines = ransac_algorithm(&pointcloud, 100, 0.05);
+
+        for line in lines.iter().map(|(_, l)| l) {
+            println!("{:?}", line);
+        }
+
+        assert_eq!(lines.len(), 2);
     }
 }

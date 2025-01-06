@@ -1,5 +1,6 @@
 mod header;
 mod laser_scan;
+mod line2;
 mod odometry;
 mod point2;
 mod point3;
@@ -9,6 +10,7 @@ mod pose3;
 
 pub use header::*;
 pub use laser_scan::*;
+pub use line2::*;
 pub use odometry::*;
 pub use point2::*;
 pub use point3::*;

@@ -2,7 +2,7 @@ use crate::*;
 use nalgebra as na;
 use yaml_rust2::YamlLoader;
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct Odometry {
     header: Header,
     pose: na::Isometry3<f64>,

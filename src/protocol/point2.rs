@@ -1,7 +1,7 @@
 use crate::*;
 use nalgebra as na;
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Default)]
 pub struct Point2 {
     /// [m]
     x: f64,
