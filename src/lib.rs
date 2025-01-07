@@ -3,6 +3,7 @@ mod icp;
 mod map_viz;
 mod mapping;
 mod protocol;
+mod slam_runner;
 mod traits;
 mod utils;
 
@@ -11,5 +12,6 @@ pub use icp::*;
 pub use map_viz::*;
 pub use mapping::*;
 pub use protocol::*;
+pub use slam_runner::*;
 pub use traits::*;
 pub use utils::*;

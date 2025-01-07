@@ -63,10 +63,15 @@ impl Mapping {
         }
     }
 
-    pub fn update(&mut self, current_position: &na::Isometry2<f64>, laser_scan: &LaserScan) {
+    pub fn update(
+        &mut self,
+        current_position: &(impl Into<na::Isometry2<f64>> + Clone),
+        laser_scan: &LaserScan,
+    ) {
         let points: Pointcloud2 = laser_scan.clone().into();
         let points = coordinate_transformation(current_position, points.points());
 
+        let current_position = current_position.clone().into();
         let current_position_translation = current_position.translation;
 
         for point in points {
