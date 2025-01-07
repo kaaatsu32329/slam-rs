@@ -41,6 +41,26 @@ impl Line2 {
         (self.param.a, self.param.b, self.param.c)
     }
 
+    pub fn x(&self, y: f64) -> Option<f64> {
+        if self.param.a.abs() < f64::EPSILON {
+            Some(-(self.param.c / self.param.b))
+        } else if self.param.b.abs() < f64::EPSILON {
+            None
+        } else {
+            Some(-(self.param.b * y + self.param.c) / self.param.a)
+        }
+    }
+
+    pub fn y(&self, x: f64) -> Option<f64> {
+        if self.param.a.abs() < f64::EPSILON {
+            None
+        } else if self.param.b.abs() < f64::EPSILON {
+            Some(-(self.param.c / self.param.a))
+        } else {
+            Some(-(self.param.a * x + self.param.c) / self.param.b)
+        }
+    }
+
     /// Get the edge of the line.
     /// Return (min_point, max_point)
     pub fn edge(&self) -> (Point2, Point2) {

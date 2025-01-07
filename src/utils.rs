@@ -76,7 +76,7 @@ pub fn ransac_algorithm(
 ) -> Vec<(Vec<usize>, Line2)> {
     let pointcloud: Pointcloud2 = pointcloud.clone().into();
     let min_sample = 2;
-    let least_points = 2; // TODO: Move to the parameter.
+    let least_points = 20; // TODO: Move to the parameter.
     let mut lines = Vec::new();
 
     for _ in 0..max_iters {

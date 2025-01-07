@@ -31,8 +31,12 @@ fn main() {
 
     while let Some((laser_scan, odometry)) = data_loader.next_scan_2d() {
         slam_runner.update(&laser_scan, &odometry);
-        map_viz.update(slam_runner.mapping(), slam_runner.robot_pose());
 
-        std::thread::sleep(std::time::Duration::from_millis(25));
+        map_viz.update(
+            slam_runner.mapping(),
+            &laser_scan.clone().into(),
+            slam_runner.robot_pose(),
+        );
+
     }
 }
